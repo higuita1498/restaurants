@@ -8,7 +8,7 @@ import FavoritesStack from './FavoritesStack'
 import SearchStack from './SearchStack'
 import AccountStack from './AccountStack'
 import TopRestaurantsStack from './TopRestaurantsStack'
-import Restaurants from '../screens/Restaurants'
+import Restaurants from '../screens/restaurants/Restaurants'
 
 //lo creamos en mayuscula por que es un componente "Tab"
 const Tab = createBottomTabNavigator()

@@ -26,7 +26,7 @@ export default function Loading({ isVisible, text }) {
 const styles = StyleSheet.create({
     overlay : {
         height:100,
-        width: 100,
+        width: "50%",
         backgroundColor: "#FFFFFF" ,
         borderColor: "#442484",
         borderWidth:2,
