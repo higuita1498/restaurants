@@ -63,8 +63,6 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
         }
 
         navigation.navigate("restaurants")
-        
-        console.log("Fuck yeahh!!")
     }
 
     const uploadImages = async() => {

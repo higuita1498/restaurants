@@ -4,6 +4,7 @@ import {createStackNavigator} from '@react-navigation/stack'
 import Account from '../screens/account/Account'
 import Login from '../screens/account/Login'
 import Register from '../screens/account/Register'
+import Account2 from '../screens/account/Account2'
 
 const Stack = createStackNavigator()
 
@@ -24,6 +25,11 @@ export default function AccountStack() {
                 name="register"
                 component={Register}
                 options={{title:"Registrar usuario"}}
+            />
+            <Stack.Screen 
+                name="account2"
+                component={Account2}
+                options={{title:"cuenta 2 papu"}}
             />
         </Stack.Navigator>
     )

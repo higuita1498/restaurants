@@ -17,12 +17,19 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier":"com.alejo.restaurants"
     },
     "android": {
+      "package": "com.alejo.restaurants",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBtbRuFLpMvVW-ZcmOhVhQWOHX4JRG1Yn4"
+        }
       },
       "permissions": [
         "CAMERA_ROLL",
