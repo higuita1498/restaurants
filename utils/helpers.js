@@ -1,7 +1,7 @@
 import * as Permissions from 'expo-permissions'
 import * as ImagePicker from 'expo-image-picker'
 import * as Location from 'expo-location'
-import {Alert} from 'react-native'
+import { Alert, Linking } from 'react-native'
 import { size } from 'lodash'
 
 export function validateEmail(email) {
@@ -74,3 +74,25 @@ export const formatPhone = (callingCode, phone) => {
     }
     return `+(${callingCode}) ${phone.substr(0, 3)} ${phone.substr(3, 3)} ${phone.substr(6, 4)}`
 }
+
+//abre las llamadas del telefono.
+export const callNumber = (phoneNumber) => {
+    Linking.openURL(`tel:${phoneNumber}`)
+}
+
+//mandar un wpp
+export const sendWhatsApp = (phoneNumber, text) => {
+    const link = `https://wa.me/${phoneNumber}?text=${text}`
+    Linking.canOpenURL(link).then((supported) => {
+        if (!supported) {
+            Alert.alert("Por favor instale WhatsApp para enviar un mensaje directo")
+            return
+        }
+        return Linking.openURL(link)
+    })
+}
+
+//enviar un email
+export const sendEmail = (to, subject, body) => {
+    Linking.openURL(`mailto:${to}?subject=${subject}&body=${body}`)
+} 

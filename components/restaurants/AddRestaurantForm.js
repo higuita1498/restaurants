@@ -54,8 +54,6 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation }) 
 
         const responseAddDocument = await addDocumentWithoutId("restaurants", restaurant)
 
-        console.log(responseAddDocument)
-
         if(!responseAddDocument.statusResponse){
             toastRef.current.show("Error al grabar el restaurante porfavor intenta más tarde",3000)
             setLoading(false)
@@ -194,7 +192,7 @@ function MapRestaurant({isVisibleMap, setIsVisibleMap, setLocationRestaurant, to
     }
 
     return (
-        <Modal isVisible={isVisibleMap} setIsVisible={setIsVisibleMap}>
+        <Modal isVisible={isVisibleMap} setVisible={setIsVisibleMap}>
             <View>
                 {
                     newRegion && (

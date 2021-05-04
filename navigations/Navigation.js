@@ -37,10 +37,6 @@ export default function Navigation() {
 
             case "account":
             iconName = "home-outline"
-
-            case "account2":
-            iconName = "home-outline"
-            break;
         }
 
         return (
@@ -83,7 +79,7 @@ export default function Navigation() {
                     name="top-restaurants"
                     //Con este componente le indicamos que queremos reenderizar la vista restaurants.js
                     component={TopRestaurantsStack}
-                    options={{title: "Top 5"}}
+                    options={{title: "Top 10"}}
                 />
                 <Tab.Screen
                     name="search"
@@ -96,12 +92,6 @@ export default function Navigation() {
                     //Con este componente le indicamos que queremos reenderizar la vista restaurants.js
                     component={AccountStack}
                     options={{title: "Cuenta"}}
-                />
-                 <Tab.Screen
-                    name="account2"
-                    //Con este componente le indicamos que queremos reenderizar la vista restaurants.js
-                    component={AccountStack}
-                    options={{title: "Cuenta2p"}}
                 />
             </Tab.Navigator>
         </NavigationContainer>

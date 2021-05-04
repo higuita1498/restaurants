@@ -26,49 +26,47 @@ export default function AddReviewRestaurant({navigation,route}) {
         }
 
         setLoading(true)
-
         const user = getCurrentUser()
-        //acá llamamos la vairable avatar por que esamos trabajando con bd no relacionales [INVESTIGAR POR QUE]
+
+         //acá llamamos la vairable avatar por que esamos trabajando con bd no relacionales [INVESTIGAR POR QUE]
         const data = {
             idUser: user.uid,
-            avatar: user.photoURL,
+            avatarUser: user.photoURL,
             idRestaurant,
             title,
+            review,
             rating,
             createAt: new Date()
         }
 
-        //Añadimos el nuevo comentario hacia el restaurante
-        const responseAddReview = await addDocumentWithoutId("reviews",data)
+         //Añadimos el nuevo comentario hacia el restaurante
+        const responseAddReview = await addDocumentWithoutId("reviews", data)
 
-        if(!responseAddReview.statusResponse){
+        if (!responseAddReview.statusResponse) {
             setLoading(false)
-            toastRef.current.show("Error al enviar el comentario porfavor intenta más tarde",3000)
+            toastRef.current.show("Error al enviar el comentario, por favor intenta más tarde.", 3000)
             return
         }
 
-        const responseGetRestaurant = await getDocumentById("restaurants",idRestaurant)
-
-        if(!responseGetRestaurant.statusResponse){
+        const responseGetRestaurant = await getDocumentById("restaurants", idRestaurant)
+        if (!responseGetRestaurant.statusResponse) {
             setLoading(false)
-            toastRef.current.show("Error al actualizar el restaurante, por favor intenta más tarde.", 3000)
+            toastRef.current.show("Error al obtener el restaurante, por favor intenta más tarde.", 3000)
             return
         }
 
         const restaurant = responseGetRestaurant.document
-        //sumamos los puntos 
+         //sumamos los puntos 
         const ratingTotal = restaurant.ratingTotal + rating
         //sumamos la cantidad de votos hecha al restaurante
         const quantityVoting = restaurant.quantityVoting + 1
-        //resultado de los votos hecha al restaurante
+          //resultado de los votos hecha al restaurante
         const ratingResult = ratingTotal / quantityVoting
-
         const responseUpdateRestaurant = await updateDocument("restaurants", idRestaurant, {
             ratingTotal,
             quantityVoting,
             rating: ratingResult
         })
-
         setLoading(false)
 
         if (!responseUpdateRestaurant.statusResponse) {
@@ -77,9 +75,8 @@ export default function AddReviewRestaurant({navigation,route}) {
         }
 
         navigation.goBack()
-
     }
-
+    
     const validForm = () => {
         setErrorTitle(null)
         setErrorReview(null)
