@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "272434749016",
+    "project_id": "restaurants-e88ff",
+    "storage_bucket": "restaurants-e88ff.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:272434749016:android:338e43ba102b6dbcf8b42d",
+        "android_client_info": {
+          "package_name": "com.alejo.restaurants"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "272434749016-db4nm5p4fi91d043lv67us1placj1jvf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.alejo.restaurants",
+            "certificate_hash": "40f95a2abccb08963ca9492699f4efe131b5cd59"
+          }
+        },
+        {
+          "client_id": "272434749016-ja5dm3lchu5c46h2qeao5gs7rcflt9su.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtbRuFLpMvVW-ZcmOhVhQWOHX4JRG1Yn4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "272434749016-ja5dm3lchu5c46h2qeao5gs7rcflt9su.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "272434749016-jibabj6fspkemef7js1c1a29m3901nug.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.alejo.restaurants"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

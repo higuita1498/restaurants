@@ -7,6 +7,7 @@ import Constants from 'expo-constants' //nos sirve para saber si lo estamos ejec
 
 import { fileToBlob } from './helpers'
 import { map } from 'lodash'
+import { Alert } from 'react-native'
 
 const db = firebase.firestore(firebaseApp)
 const fireSQL = new FireSQL(firebase.firestore(), { includeId: "id" })
@@ -330,4 +331,147 @@ export const searchRestaurants = async(criteria) => {
         result.error = error
     }
     return result     
+}
+
+//vamos a mandarle a cada usuario las peticiones de notificaciones por token
+export const getToken = async() => {
+    //preguntamos si estamos ejecutando la solución en un dispositivo físico
+    if(!Constants.isDevice){
+        Alert.alert("Debes utilizar un dispositivo fisico para poder utilizar notificaciones")
+        return
+    }
+
+    //obtenemos los permisos para poder notificaciones
+    const {status: existingStatus} = await Notifications.getPermissionsAsync()
+    let finalStatus  = existingStatus
+    //si no le dieron el permiso volvemos a preguntar.
+    if(existingStatus !== "granted"){
+        const { status } = await Notifications.requestPermissionsAsync()
+        finalStatus = status 
+    }
+
+    if(finalStatus !== "granted"){
+        Alert.alert("Debes dar permiso para acceder a las notifiaciones")
+        return
+    }
+
+    //pedimos el token
+    const token = (await Notifications.getExpoPushTokenAsync()).data
+
+    //manera de preguntar que dispositivo estamos usando (esto solo lo hacemos para sistema android)
+    if(Platform.OS == "android"){
+        Notifications.setNotificationChannelAsync("default", {
+            name: "default",
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0,250,250,250], //es la manera como vibra el teléfono.
+            lightColor: "#ff231f7c" //color de la ventanita de las notificaciones
+        })
+    }
+
+    return token
+}
+
+//nosotros le pasamos el id
+export const addDocumentWithtId = async(collection, data, doc) => {
+    const result = { statusResponse: true, error: null }
+    try {
+        //actualizamos una coleccion
+        await db.collection(collection).doc(doc).set(data)
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+        console.log(result)
+    }
+    return result     
+}
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true
+    })
+ })
+
+ //inicializamos las notifiaciones
+ export const startNotifications = (notificationListener, responseListener) => {
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+        console.log(notification)
+    })   
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(notification => {
+        console.log(notification)
+    })  
+    return () => {
+        Notifications.removeNotificationSubscription(notificationListener)
+        Notifications.removeNotificationSubscription(responseListener)
+    }
+ }
+
+ //Es el mensaje que queremos enviar en la push notification
+ export const sendPushNotification = async(message) => {
+    let response = false
+    //dirección de la nofiticacion
+    await fetch("https://exp.host/--/api/v2/push/send", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Accept-encoding": "gzip, deflate",
+        "Content-Type": "application/json",
+      },
+      //el mensaje lo convertimos en json
+      body: JSON.stringify(message),
+    }).then(() => response = true)
+    return response
+}
+
+//construcción del mensaje
+export const setNotificationMessage = (token, title, body, data) => {
+    const message = {
+        to: token,
+        sound: "default",
+        title: title,
+        body: body,
+        data: data
+    }
+  
+    return message
+}
+
+//obtenemos todos los usuarios que tienen como favorito a un mismo restaurante
+export const getUsersFavorite = async(restaurantId) => {
+    const result = { statusResponse: true, error: null, users: [] }
+    try {
+        const response = await db.collection("favorites").where("idRestaurant", "==", restaurantId).get()
+
+        //recorremos por medio de un await promise.all toda la coleccion obtenida
+        await Promise.all(
+            //despues hacemos un map con async, por que tenemos que esperar a que se ejecute cada consulta
+            map(response.docs, async(doc) => {
+                //entramos al data  (idrestaurant y iduser)
+                const favorite = doc.data()
+                //por eso necesitamos el promise all, por que hacemos un await acá
+                const user = await getDocumentById("users", favorite.idUser)
+                //si el usuario tenia token
+                if (user.statusResponse) {
+                    result.users.push(user.document)
+                }
+            })
+        )
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result
+}
+
+//enviar un correo para resetar el password
+export const sendEmailResetPassword = async(email) => {
+    const result = { statusResponse: true, error: null }
+    try {
+        await firebase.auth().sendPasswordResetEmail(email)
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result
 }

@@ -36,6 +36,7 @@ export default function Restaurant({ navigation, route }) {
     const [userLogged, setUserLogged] = useState(false)
     const [currentUser, setCurrentUser] = useState(null)
     const [loading, setLoading] = useState(false)
+    const [modalNotification, setModalNotification] = useState(false)
 
     firebase.auth().onAuthStateChanged(user => {
         user ? setUserLogged(true) : setUserLogged(false)
@@ -145,10 +146,18 @@ export default function Restaurant({ navigation, route }) {
                 currentUser={currentUser}
                 callingCode={restaurant.callingCode}
                 phoneNoFormat={restaurant.phone}
+                setLoading={setLoading}
+                setModalNotification={setModalNotification}
             />
             <ListReviews 
                 navigation={navigation}
                 idRestaurant={restaurant.id}
+            />
+            <SendMessage 
+                modalNotification={modalNotification}
+                setModalNotification={setModalNotification}
+                setLoading={setLoading}
+                restaurant={restaurant}
             />
              <Toast ref={toastRef} position="center" opacity={0.9}/>
             <Loading isVisible={loading} text="Por favor espere..."/>
@@ -156,7 +165,114 @@ export default function Restaurant({ navigation, route }) {
     )
 }
 
-function RestaurantInfo({name, location, address, email, phone, currentUser,callingCode,phoneNoFormat}){
+//componente para volver dinamico el titulo y cuerpo de un mensaje via notification
+function SendMessage({modalNotification,setModalNotification,setLoading,restaurant}){
+    const [title, setTitle] = useState(null)
+    const [errorTitle, setErrorTitle] = useState(null)
+    const [message, setMessage] = useState(null)
+    const [errorMessage, setErrorMessage] = useState(null)
+
+    const sendNotification = async() => {
+
+        if (!validForm()) {
+            return
+        }
+
+        setLoading(true)
+
+        const userName = getCurrentUser().displayName ? getCurrentUser().displayName : "Anónimo"
+        const theMessage = `${message} del restaurante: ${restaurant.name}`
+
+        const usersFavorite = await getUsersFavorite(restaurant.id)
+
+        if (!usersFavorite.statusResponse) {
+            setLoading(false)
+            Alert.alert("Error al obtener los usuarios que aman el restaurante.")
+            return
+        }
+
+        //como tenemos sque mandar esto en un ciclo y con un await entonces lo hacemos con Promise.all
+        await Promise.all (
+            map(usersFavorite.users, async(user) => {
+                const messageNotification = setNotificationMessage(
+                    user.token,
+                    `${userName}, dijo: ${title}`,
+                    theMessage,
+                    { data: theMessage}
+                )
+        
+                await sendPushNotification(messageNotification)
+            })
+        )
+
+        setLoading(false)
+        setTitle(null)
+        setMessage(null)
+        setModalNotification(false)
+    }
+
+    const validForm = () => {
+        let isValid = true;
+
+        if (isEmpty(title)) {
+            setErrorTitle("Debes ingresar un título a tu mensaje.")
+            isValid = false
+        }
+
+        if (isEmpty(message)) {
+            setErrorMessage("Debes ingresar un mensaje.")
+            isValid = false
+        }
+
+        return isValid
+    }
+
+    return (
+        <Modal
+            isVisible={modalNotification}
+            setVisible={setModalNotification}
+        >
+            <View style={styles.modalNotification}>
+                <Text style={styles.textModal}>
+                    Envíale un mensaje a los amantes de {restaurant.name}
+                </Text>
+                <Input
+                    placeholder="Título del mensaje..."
+                    onChangeText={(text) => setTitle(text)}
+                    value={title}
+                    errorMessage={errorTitle}
+                />
+                 <Input
+                    placeholder="Mensaje..."
+                    multiline
+                    inputStyle={styles.textArea}
+                    onChangeText={(text) => setMessage(text)}
+                    value={message}
+                    errorMessage={errorMessage}
+                />
+                <Button
+                    title="Enviar Mensaje"
+                    buttonStyle={styles.btnSend}
+                    containerStyle={styles.btnSendContainer}
+                    onPress={sendNotification}
+                />
+            </View>
+        </Modal>
+    )
+}
+
+function RestaurantInfo({
+    name, 
+    location, 
+    address, 
+    email, 
+    phone, 
+    currentUser,
+    callingCode,
+    phoneNoFormat,
+    setLoading,
+    setModalNotification
+}){
     const listInfo = [
         { type: "addres", text: address, iconLeft: "map-marker", iconRight: "message-text-outline" },
         { type: "phone", text: phone, iconLeft: "phone", iconRight: "whatsapp" },
@@ -186,6 +302,7 @@ function RestaurantInfo({name, location, address, email, phone, currentUser,call
             setModalNotification(true)
         }
     }
+
 
     return (
         <View style={styles.viewRestaurantInfo}>

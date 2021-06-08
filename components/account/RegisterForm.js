@@ -6,7 +6,7 @@ import {useNavigation} from '@react-navigation/native'
 
 //Imports de mis propias librerias
 import { validateEmail } from '../../utils/helpers'
-import {registerUser} from '../../utils/actions'
+import {addDocumentWithtId, getCurrentUser, getToken, registerUser} from '../../utils/actions'
 import Loading from '../Loading'
 
 export default function RegisterForm() {
@@ -31,11 +31,22 @@ export default function RegisterForm() {
         }
         setLoading(true)
         const result = await registerUser(formData.email, formData.password)
-        setLoading(false)
         if(!result.statusRepsonse){
+            setLoading(false)
             setErrorEmail(result.error)
             return
         }
+        
+        const token = await getToken()
+        const resultUser = await addDocumentWithtId("users",{token}, getCurrentUser().uid)
+
+        if(!resultUser.statusResponse){
+            setLoading(false)
+            setErrorEmail(result.error)
+            return
+        }
+
+        setLoading(false)
 
         navigation.navigate("account")
     }

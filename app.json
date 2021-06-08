@@ -18,10 +18,17 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier":"com.alejo.restaurants"
+      "bundleIdentifier":"com.alejo.restaurants",
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "272434749016-jibabj6fspkemef7js1c1a29m3901nug.apps.googleusercontent.com"
+        }
+      },
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "package": "com.alejo.restaurants",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
@@ -37,8 +44,10 @@
         "WRITE_EXTERNAL_STORAGE",
         "LOCATION",
         "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION"
-      ]
+        "ACCESS_FINE_LOCATION",
+        "USER_FACING_NOTIFICATIONS"
+      ],
+      "useNextNotificationsApi":true
     },
     "web": {
       "favicon": "./assets/favicon.png"
